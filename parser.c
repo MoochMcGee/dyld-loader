@@ -1,43 +1,45 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
 
-typedef int	cpu_type_t;
-typedef int	cpu_subtype_t;
-typedef int	vm_prot_t;
-
-struct mach_header {
-   uint32_t      magic;
-   cpu_type_t    cputype;
-   cpu_subtype_t cpusubtype;
-   uint32_t      filetype;
-   uint32_t      ncmds;
-   uint32_t      sizeofcmds;
-   uint32_t      flags;
-};
-
-struct segment_command {
-   uint32_t  cmd;
-   uint32_t  cmdsize;
-   char      segname[16];
-   uint32_t  vmaddr;
-   uint32_t  vmsize;
-   uint32_t  fileoff;
-   uint32_t  filesize;
-   vm_prot_t maxprot;
-   vm_prot_t initprot;
-   uint32_t  nsects;
-   uint32_t  flags;
-};
+#include "centralfiction.h"
+#include "reality.h"
 
 int getMagic(FILE *file, int offset)
 {
-   uint32_t magic; /* is this even correct? */
-   fseek(file, offset, SEEK_SET);
-   fread(&magic, sizeof(uint32_t), 1, file);
-   return magic;
+   /* read first 4 bytes as hex */
+   char magic[4]; 
+   int x;
+   x = fread(&magic, sizeof(char), 4, file);
+   return x;
 }
 
-int dump_seg(FILE *file, uint32_t magic)
+int can_we_haz_64(uint32_t magic)
 {
-   printf("lol\n");
+   return magic == MH_MAGIC_64 || magic == MH_CIGAM_64;
+}
+
+int can_we_haz_byteswap(uint32_t magic)
+{
+  return magic == MH_CIGAM || magic == MH_CIGAM_64;
+}
+
+int dump_seg(const char *filename, FILE *file, uint32_t magic)
+{
+   int are_we_64b = can_we_haz_64(magic);
+   if(are_we_64b == 1)
+   {
+      printf("%s is a 64 bit binary!\n", filename);
+   }
+   else if(are_we_64b == 0)
+   {
+      printf("%s is a 32 bit binary!\n", filename);
+   }
+   else
+   {
+      printf("%s is *probably* a fat binary!\n", filename);
+   }
+   int do_we_need_swap = can_we_haz_byteswap(magic);
 }

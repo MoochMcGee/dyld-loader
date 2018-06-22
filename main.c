@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include <inttypes.h>
 
+#include "reality.h"
+
 int main(int argc, char *argv[])
 {
    printf("dyld-loader\n");
@@ -31,8 +33,7 @@ int main(int argc, char *argv[])
       exit(0);
    }
    uint32_t magic = getMagic(file, 0);
-   printf("file magic is: %"PRIu32"\n");
-   ///list_seg(file);
+   dump_seg(filename, file, magic);
    fclose(file);
    return(0);
 }
