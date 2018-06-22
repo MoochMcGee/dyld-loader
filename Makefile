@@ -2,7 +2,7 @@ CXX=gcc
 CFLAGS=
 LIBS=
 OBJ = main.o  \
-parser.o 
+parser.o
 
 all: $(OBJ)
 	$(CXX) $(CFLAGS) $(OBJ) -o dynamic $(LIBS)

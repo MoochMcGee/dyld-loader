@@ -1,12 +1,13 @@
 #ifndef YR_H
 #define YR_H
 
-int getMagic(FILE *file, int offset);
-int can_we_haz_64(uint32_t magic);
-int can_we_haz_byteswap(uint32_t magic);
-int dump_seg(const char *filename, FILE *file, uint32_t magic);
+#include <stdbool.h>
+#include "centralfiction.h"
 
-unsigned char* hexstr_to_char(const char* hexstr);
-int byteArrayToHexString(uint8_t *byte_array, int byte_array_len, char *hexstr, int hexstr_len);
+/* parser.c */
+static const void *i_can_haz_read(macho_t *input, const void *addr, size_t len);
+static const void *i_can_haz_offset(macho_t *input, const void *addr, size_t offset, size_t len);
+char *i_can_haz_version(uint32_t ver);
+bool the_fun_part(macho_t *input);
 
 #endif /* YR_H */

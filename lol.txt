@@ -1,0 +1,5 @@
+dyld-loader
+version: 0.1 Beta
+Build on Jun 22 2018 at 11:58:28
+Îúíş
+bin/bash is a 32 bit binary!

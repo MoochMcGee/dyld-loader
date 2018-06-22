@@ -2,6 +2,7 @@
 #define CF_H
 
 #include <stdint.h> /* god has left the chat */
+#include <stddef.h> /* jesus has left the chat */
 
 #define	MH_MAGIC	0xfeedface	/* the mach magic number */
 #define MH_CIGAM	0xcefaedfe	/* NXSwapInt(MH_MAGIC) */
@@ -9,6 +10,7 @@
 #define MH_CIGAM_64 0xcffaedfe /* NXSwapInt(MH_MAGIC_64) */
 #define FAT_MAGIC	0xcafebabe
 #define FAT_CIGAM   0xbebafeca
+/* bad */
 #define MH_MAGIC_NH feedface
 #define MH_MAGIC_64_NH feedfacf
 #define MH_MAGIC_FLIP_NH cefaedfe
@@ -20,6 +22,36 @@
 typedef int	cpu_type_t;
 typedef int	cpu_subtype_t;
 typedef int	vm_prot_t;
+
+#define OSSwapConstInt32(x) \
+    ((uint32_t)((((uint32_t)(x) & 0xff000000) >> 24) | \
+                (((uint32_t)(x) & 0x00ff0000) >>  8) | \
+                (((uint32_t)(x) & 0x0000ff00) <<  8) | \
+                (((uint32_t)(x) & 0x000000ff) << 24)))
+
+#define OSSwapConstInt32(x) \
+    ((uint32_t)((((uint32_t)(x) & 0xff000000) >> 24) | \
+                (((uint32_t)(x) & 0x00ff0000) >>  8) | \
+                (((uint32_t)(x) & 0x0000ff00) <<  8) | \
+                (((uint32_t)(x) & 0x000000ff) << 24)))
+
+#define OSSwapConstInt64(x) \
+    ((uint64_t)((((uint64_t)(x) & 0xff00000000000000ULL) >> 56) | \
+                (((uint64_t)(x) & 0x00ff000000000000ULL) >> 40) | \
+                (((uint64_t)(x) & 0x0000ff0000000000ULL) >> 24) | \
+                (((uint64_t)(x) & 0x000000ff00000000ULL) >>  8) | \
+                (((uint64_t)(x) & 0x00000000ff000000ULL) <<  8) | \
+                (((uint64_t)(x) & 0x0000000000ff0000ULL) << 24) | \
+                (((uint64_t)(x) & 0x000000000000ff00ULL) << 40) | \
+                (((uint64_t)(x) & 0x00000000000000ffULL) << 56)))
+
+#define OSSwapInt16(x) OSSwapConstInt16(x)
+
+#define OSSwapInt32(x) OSSwapConstInt32(x)
+
+#define OSSwapInt64(x) OSSwapConstInt64(x)
+
+#define OSSwapBigToHostInt32(x) ((uint32_t)(x))
 
 struct mach_header {
    uint32_t	magic;		/* mach magic number identifier */
@@ -87,5 +119,10 @@ struct fat_arch {
    unsigned long	size;		/* size of this object file */
    unsigned long	align;		/* alignment as a power of 2 */
 };
+
+typedef struct macho {
+   const void *file;
+   size_t len;
+} macho_t;
 
 #endif /* CF_H */

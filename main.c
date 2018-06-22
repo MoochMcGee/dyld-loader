@@ -13,8 +13,13 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <inttypes.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "reality.h"
+#include "centralfiction.h"
 
 int main(int argc, char *argv[])
 {
@@ -26,14 +31,31 @@ int main(int argc, char *argv[])
       exit(0);
    }
    const char *filename = argv[1];
-   FILE *file = fopen(filename, "rb");
-   if(!file) /* sanity */
+   int f = open(filename, O_RDONLY);
+   if(f < 0)
    {
-      printf("unable to open %s\n", filename);
+      printf("unable to open %s", filename);
       exit(0);
    }
-   uint32_t magic = getMagic(file, 0);
-   dump_seg(filename, file, magic);
-   fclose(file);
+   struct stat stbuf;
+   if(fstat(f, &stbuf) != 0)
+   {
+      printf("fstat err\n");
+   }
+   void *stuff = mmap(NULL, stbuf.st_size, PROT_READ, MAP_FILE|MAP_PRIVATE, f, 0);
+   if(stuff == MAP_FAILED)
+   {
+      printf("lol wtf mmap died\n");
+      exit(0);
+   }
+   macho_t input_file;
+   input_file.file = stuff;
+   input_file.len = stbuf.st_size;
+   printf("parsing: %s\n", filename);
+   if (!the_fun_part(&input_file)) {
+      printf("failed to parse %s", filename);
+   }
+   munmap(stuff, stbuf.st_size);
+   close(f);
    return(0);
 }
